@@ -195,3 +195,16 @@ html.anim-ready .reveal.in{opacity:1;transform:none}
 @media (max-width:1040px){.nav{display:none}.burger{display:flex}.foot-top{grid-template-columns:1fr 1fr}}
 @media (max-width:900px){.occ-row{grid-template-columns:1fr 1fr}.values{grid-template-columns:1fr 1fr;gap:26px}.split,.order-grid,.contact-grid{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}.slide-copy .inner{max-width:100%}.slide::after{background:linear-gradient(180deg,rgba(40,28,25,.35),rgba(40,28,25,.7))}}
 @media (max-width:560px){.wrap{padding:0 18px}.prod-row{grid-auto-columns:minmax(200px,72%)}.grid{grid-template-columns:1fr}.values{grid-template-columns:1fr}.field-row{grid-template-columns:1fr}.foot-top{grid-template-columns:1fr}.foot-bottom{flex-direction:column}.head-actions .btn--wa span{display:none}.hero-dots{inset-inline-start:18px}.hero-nav{inset-inline-end:18px}}
+
+/* Instagram feed section */
+.ig-head{text-align:center;margin-bottom:clamp(28px,4vw,42px)}
+.ig-head .lede{margin-inline:auto}
+.ig-handle{color:var(--mauve)}
+.ig-handle:hover{color:var(--gold-deep)}
+.ig-feed{max-width:920px;margin:0 auto}
+.ig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.ig-grid a{display:block;overflow:hidden;background:var(--cream-2);aspect-ratio:1}
+.ig-grid img{width:100%;height:100%;object-fit:cover;transition:transform .8s cubic-bezier(.2,.8,.2,1)}
+.ig-grid a:hover img{transform:scale(1.05)}
+.ig-cta{text-align:center;margin-top:clamp(26px,3vw,36px)}
+@media(max-width:560px){.ig-grid{grid-template-columns:1fr 1fr;gap:10px}}
