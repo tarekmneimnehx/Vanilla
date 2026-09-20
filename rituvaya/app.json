@@ -1,0 +1,82 @@
+{
+  "expo": {
+    "name": "Rituvaya",
+    "slug": "rituvaya",
+    "version": "0.1.0",
+    "scheme": "rituvaya",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.rituvaya.app",
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true,
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "package": "com.rituvaya.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#F7F5EF",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.VIBRATE"
+      ],
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#286653",
+          "defaultChannel": "doses",
+          "sounds": ["./assets/sounds/chime.wav", "./assets/sounds/drop.wav"]
+        }
+      ],
+      "expo-sqlite",
+      [
+        "expo-localization",
+        {
+          "supportsRTL": true
+        }
+      ],
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "resizeMode": "contain",
+          "backgroundColor": "#F7F5EF",
+          "dark": {
+            "backgroundColor": "#141C18"
+          }
+        }
+      ],
+      "expo-sharing",
+      "@react-native-community/datetimepicker",
+      "expo-dev-client"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "eas": {}
+    }
+  }
+}
