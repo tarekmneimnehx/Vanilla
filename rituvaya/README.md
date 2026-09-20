@@ -64,6 +64,18 @@ eas build --profile development --platform ios   # or --profile preview for a sh
 ```
 EAS asks for Apple credentials; installing on a physical iPhone through EAS requires an Apple Developer Program membership (ad-hoc provisioning). Register the device with `eas device:create`.
 
+### Option D: Web preview in the phone's browser (no install)
+
+The same code runs as a web app with browser storage (no notifications, no native pickers). To host it anywhere static:
+
+```bash
+cd rituvaya
+npx expo export --platform web
+node scripts/prepare-web-preview.js      # makes dist/ relocatable (relative URLs, bundles/ folder)
+node scripts/check-web-preview.js        # optional: boots dist/ under a sub-path in headless Chromium
+```
+Upload the `dist/` folder to any static host (Netlify drop, Vercel, GitHub Pages, S3) and open the link in Safari or Chrome on the phone. Add it to the home screen for a full-screen feel.
+
 ## Run it on Android
 
 - **Expo Go**: same as Option A; scan the QR code with the Expo Go app.
