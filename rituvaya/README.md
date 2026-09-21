@@ -51,8 +51,12 @@ The fastest path uses Expo Go; the full path uses a development build (needed fo
    npx expo prebuild --platform ios      # generates the ios/ folder from app.json
    npx expo run:ios --device             # pick your iPhone; Xcode signs with your team
    ```
-   If signing fails, open `ios/Rituvaya.xcworkspace`, select the target › Signing & Capabilities, choose your Team, and run again.
-5. The phone now has a "Rituvaya" development app. Start the JS server with `npx expo start --dev-client` when developing; the installed build works without the server afterwards (it uses the last bundle it loaded).
+   If signing fails, open `ios/Rituvaya.xcworkspace`, select the target › Signing & Capabilities, choose your Team, and run again. On the phone, the first launch of a build signed with a free Apple ID needs Settings › General › VPN & Device Management › trust the developer.
+5. That command makes a **debug** build: it loads JavaScript from the Metro server, so it only opens while `npx expo start --dev-client` is running on the Mac. To use the app away from the computer, build the release variant instead — it embeds the bundle and runs on its own:
+   ```bash
+   npx expo run:ios --device --configuration Release
+   ```
+   With a free Apple ID the installed app stops launching after 7 days; re-run the command to reinstall (records on the device are kept).
 
 ### Option C: Cloud build with EAS (no Mac required)
 
