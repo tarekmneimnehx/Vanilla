@@ -96,6 +96,7 @@ Upload the `dist/` folder to any static host (Netlify drop, Vercel, GitHub Pages
 
 - Bundle identifier / package: `com.rituvaya.app` (change in `app.json` before store submission).
 - The app uses local notifications only, so `plugins/withLocalOnlyNotifications.js` strips the `aps-environment` entitlement that `expo-notifications` adds by default. Without this, a free Apple ID cannot sign a build: personal teams do not support the Push Notifications capability. Remove the plugin if remote push is ever added.
+- `ios.infoPlist.UIApplicationSceneManifest` in `app.json` points at Expo's `EXExpoAppSceneDelegate`. iOS 26 and later assert at launch (`EXC_BREAKPOINT` in `UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption`) unless the app adopts the UIScene life cycle, killing it before any JavaScript runs. Do not remove it.
 - Icons, splash, notification icon and the two `.wav` sounds are generated from `scripts/generate-icons.js` and `scripts/generate-sounds.js` and committed under `assets/`.
 - No secrets, API keys or services are required.
 
