@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { itemHistory } from '@/domain/services/queries';
 import type { DoseLog } from '@/domain/types';
 import { useI18n } from '@/i18n';
@@ -8,6 +8,7 @@ import { formatDoseText } from '@/i18n/dose';
 import { formatLocalDate, formatTime } from '@/i18n/format';
 import { useFormatContext, useIndexes, useSnapshot } from '@/state/context';
 import { useTheme } from '@/ui/ThemeProvider';
+import { useGoBack } from '@/ui/useGoBack';
 import { Card } from '@/ui/components/Card';
 import { SectionHeader } from '@/ui/components/Controls';
 import { EmptyState } from '@/ui/components/EmptyState';
@@ -17,7 +18,7 @@ import { LogEditSheet } from '@/features/history/LogEditSheet';
 
 export default function ItemHistoryScreen() {
   const theme = useTheme();
-  const router = useRouter();
+  const goBack = useGoBack();
   const { t, language } = useI18n();
   const format = useFormatContext();
   const snapshot = useSnapshot();
@@ -38,7 +39,7 @@ export default function ItemHistoryScreen() {
   const liveEditing = editing ? (snapshot.logs.find((l) => l.id === editing.id) ?? null) : null;
 
   return (
-    <Screen title={t('history.itemHistory', { name: item?.displayName ?? '' })} onBack={() => router.back()} testID="item-history">
+    <Screen title={t('history.itemHistory', { name: item?.displayName ?? '' })} onBack={() => goBack()} testID="item-history">
       {grouped.length === 0 ? (
         <Card>
           <EmptyState icon="calendar" title={t('history.itemEmpty')} compact />

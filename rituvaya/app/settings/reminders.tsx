@@ -1,11 +1,11 @@
 import React from 'react';
 import { View } from 'react-native';
-import { useRouter } from 'expo-router';
 import type { MissedPolicy, NotificationSound, QuietHours, ReminderSettings } from '@/domain/types';
 import { useI18n } from '@/i18n';
 import { formatDuration } from '@/i18n/format';
 import { useFormatContext, useSnapshot, useStore } from '@/state/context';
 import { useTheme } from '@/ui/ThemeProvider';
+import { useGoBack } from '@/ui/useGoBack';
 import { Card } from '@/ui/components/Card';
 import { Chip } from '@/ui/components/Chip';
 import { SectionHeader, Stepper, SwitchRow } from '@/ui/components/Controls';
@@ -15,7 +15,7 @@ import { Text } from '@/ui/components/Text';
 
 export default function ReminderSettingsScreen() {
   const theme = useTheme();
-  const router = useRouter();
+  const goBack = useGoBack();
   const store = useStore();
   const { t, language } = useI18n();
   const format = useFormatContext();
@@ -34,7 +34,7 @@ export default function ReminderSettingsScreen() {
     </View>
   );
   return (
-    <Screen title={t('settings.reminders')} onBack={() => router.back()} testID="settings-reminders">
+    <Screen title={t('settings.reminders')} onBack={() => goBack()} testID="settings-reminders">
       <Card style={{ gap: theme.spacing.xs }}>
         <SwitchRow label={t('settings.remindersEnabled')} value={r.enabled} onChange={(v) => patch({ enabled: v })} />
         <Row label={t('settings.repeatCount')}>

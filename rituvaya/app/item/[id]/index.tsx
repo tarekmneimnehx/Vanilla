@@ -8,6 +8,7 @@ import { formatDoseText, formatItemDose, formatStrength, formLabel } from '@/i18
 import { formatInstantDate, formatTime } from '@/i18n/format';
 import { useFormatContext, useIndexes, useSnapshot, useStore } from '@/state/context';
 import { useTheme } from '@/ui/ThemeProvider';
+import { useGoBack } from '@/ui/useGoBack';
 import { Button, IconButton } from '@/ui/components/Button';
 import { Card } from '@/ui/components/Card';
 import { Badge, SectionHeader } from '@/ui/components/Controls';
@@ -22,6 +23,7 @@ import { useDoseActions } from '@/features/dose/useDoseActions';
 export default function ItemDetailScreen() {
   const theme = useTheme();
   const router = useRouter();
+  const goBack = useGoBack();
   const store = useStore();
   const toast = useToast();
   const { t, language } = useI18n();
@@ -37,7 +39,7 @@ export default function ItemDetailScreen() {
 
   if (!item) {
     return (
-      <Screen title={t('common.error')} onBack={() => router.back()}>
+      <Screen title={t('common.error')} onBack={() => goBack()}>
         {null}
       </Screen>
     );
@@ -66,7 +68,7 @@ export default function ItemDetailScreen() {
   ];
 
   return (
-    <Screen onBack={() => router.back()} headerEnd={<IconButton icon="edit-2" accessibilityLabel={t('routine.editItem')} onPress={() => router.push(`/item/${item.id}/edit` as never)} variant="soft" />} testID="item-detail">
+    <Screen onBack={() => goBack()} headerEnd={<IconButton icon="edit-2" accessibilityLabel={t('routine.editItem')} onPress={() => router.push(`/item/${item.id}/edit` as never)} variant="soft" />} testID="item-detail">
       <View style={{ gap: 6 }}>
         <Text variant="title" ltr accessibilityRole="header">
           {item.displayName}

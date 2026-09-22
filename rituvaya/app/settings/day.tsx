@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { useRouter } from 'expo-router';
 import { withValueFrom } from '@/domain/dated';
 import { anchorsOn } from '@/domain/schedule/slots';
 import { parseTimeOfDay } from '@/domain/time/clock';
@@ -8,6 +7,7 @@ import type { AnchorKey, Anchors } from '@/domain/types';
 import { useI18n } from '@/i18n';
 import { useFormatContext, useSnapshot, useStore, useToday } from '@/state/context';
 import { useTheme } from '@/ui/ThemeProvider';
+import { useGoBack } from '@/ui/useGoBack';
 import { Button } from '@/ui/components/Button';
 import { Card } from '@/ui/components/Card';
 import { SectionHeader } from '@/ui/components/Controls';
@@ -61,7 +61,7 @@ export function validateAnchors(value: Anchors): boolean {
 }
 
 export default function DaySettingsScreen() {
-  const router = useRouter();
+  const goBack = useGoBack();
   const store = useStore();
   const toast = useToast();
   const today = useToday();
@@ -76,10 +76,10 @@ export default function DaySettingsScreen() {
     }
     await store.updateSettings((s) => ({ ...s, anchorHistory: withValueFrom(s.anchorHistory, today, value) }));
     toast.show({ message: t('common.save'), icon: 'check' });
-    router.back();
+    goBack();
   };
   return (
-    <Screen title={t('settings.anchors')} subtitle={t('settings.anchorsHint')} onBack={() => router.back()} testID="settings-day">
+    <Screen title={t('settings.anchors')} subtitle={t('settings.anchorsHint')} onBack={() => goBack()} testID="settings-day">
       <AnchorsEditor value={value} onChange={setValue} error={error} />
       <Button label={t('common.save')} icon="check" full onPress={() => void save()} />
     </Screen>

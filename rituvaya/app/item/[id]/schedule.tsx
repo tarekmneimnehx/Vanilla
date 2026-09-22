@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { currentVersion } from '@/domain/services/scheduleService';
 import { useI18n } from '@/i18n';
 import { useIndexes, useStore, useToday } from '@/state/context';
 import { useTheme } from '@/ui/ThemeProvider';
+import { useGoBack } from '@/ui/useGoBack';
 import { Button } from '@/ui/components/Button';
 import { Card } from '@/ui/components/Card';
 import { Icon } from '@/ui/components/Icon';
@@ -16,7 +17,7 @@ import { draftFromSchedule, draftToDefinition, emptyScheduleDraft, ScheduleForm,
 
 export default function EditScheduleScreen() {
   const theme = useTheme();
-  const router = useRouter();
+  const goBack = useGoBack();
   const store = useStore();
   const toast = useToast();
   const today = useToday();
@@ -30,7 +31,7 @@ export default function EditScheduleScreen() {
   const [saving, setSaving] = useState(false);
   if (!entry) {
     return (
-      <Screen title={t('common.error')} onBack={() => router.back()}>
+      <Screen title={t('common.error')} onBack={() => goBack()}>
         {null}
       </Screen>
     );
@@ -44,13 +45,13 @@ export default function EditScheduleScreen() {
       await store.editSchedule(entry.item.id, draftToDefinition(draft));
       haptic.success();
       toast.show({ message: t('schedule.saved'), icon: 'check' });
-      router.back();
+      goBack();
     } finally {
       setSaving(false);
     }
   };
   return (
-    <Screen title={t('routine.editSchedule')} subtitle={entry.item.displayName} onBack={() => router.back()} keyboard testID="item-schedule">
+    <Screen title={t('routine.editSchedule')} subtitle={entry.item.displayName} onBack={() => goBack()} keyboard testID="item-schedule">
       <Card tone="soft" padding={theme.spacing.md} style={{ flexDirection: 'row', gap: theme.spacing.sm, alignItems: 'flex-start' }}>
         <Icon name="info" size={18} color={theme.colors.primary} mirror={false} />
         <Text variant="small" color="secondary" style={{ flex: 1 }}>
@@ -59,7 +60,7 @@ export default function EditScheduleScreen() {
       </Card>
       <ScheduleForm draft={draft} onChange={setDraft} errors={errors} />
       <View style={{ flexDirection: 'row', gap: theme.spacing.xs }}>
-        <Button label={t('common.cancel')} variant="ghost" onPress={() => router.back()} />
+        <Button label={t('common.cancel')} variant="ghost" onPress={() => goBack()} />
         <Button label={t('common.save')} icon="check" onPress={() => void save()} loading={saving} style={{ flex: 1 }} />
       </View>
     </Screen>

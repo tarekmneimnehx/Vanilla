@@ -5,6 +5,7 @@ import { useI18n } from '@/i18n';
 import { useSnapshot, useStore } from '@/state/context';
 import { storageEngineName } from '@/storage';
 import { useTheme } from '@/ui/ThemeProvider';
+import { useGoBack } from '@/ui/useGoBack';
 import { Button } from '@/ui/components/Button';
 import { Card } from '@/ui/components/Card';
 import { SectionHeader } from '@/ui/components/Controls';
@@ -34,6 +35,7 @@ async function shareExport(json: string): Promise<void> {
 export default function DataSettingsScreen() {
   const theme = useTheme();
   const router = useRouter();
+  const goBack = useGoBack();
   const store = useStore();
   const toast = useToast();
   const { t } = useI18n();
@@ -79,7 +81,7 @@ export default function DataSettingsScreen() {
   };
 
   return (
-    <Screen title={t('settings.sections.data')} onBack={() => router.back()} testID="settings-data">
+    <Screen title={t('settings.sections.data')} onBack={() => goBack()} testID="settings-data">
       <SectionHeader title={t('settings.storage')} />
       <Card style={{ gap: theme.spacing.xs }}>
         <Text variant="small" color="secondary">

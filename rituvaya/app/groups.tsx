@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useI18n } from '@/i18n';
 import { useFormatContext, useIndexes, useSnapshot, useToday } from '@/state/context';
 import { useTheme } from '@/ui/ThemeProvider';
+import { useGoBack } from '@/ui/useGoBack';
 import { Button, IconButton } from '@/ui/components/Button';
 import { Card } from '@/ui/components/Card';
 import { EmptyState } from '@/ui/components/EmptyState';
@@ -14,6 +15,7 @@ import { slotLabel } from '@/features/schedule/summary';
 export default function GroupsScreen() {
   const theme = useTheme();
   const router = useRouter();
+  const goBack = useGoBack();
   const { t, language } = useI18n();
   const format = useFormatContext();
   const snapshot = useSnapshot();
@@ -23,7 +25,7 @@ export default function GroupsScreen() {
   const ctx = useMemo(() => ({ language, format, anchorHistory: snapshot.settings.anchorHistory, groupsById: idx.groupsById, today }), [language, format, snapshot.settings.anchorHistory, idx.groupsById, today]);
   const memberCount = (groupId: string) => snapshot.schedules.filter((s) => s.effectiveTo === null && s.slots.some((slot) => slot.kind === 'group' && slot.groupId === groupId)).length;
   return (
-    <Screen title={t('groups.title')} subtitle={t('routine.groupsSubtitle')} onBack={() => router.back()} headerEnd={<IconButton icon="plus" accessibilityLabel={t('routine.newGroup')} onPress={() => router.push('/group/new')} variant="primary" />} testID="groups">
+    <Screen title={t('groups.title')} subtitle={t('routine.groupsSubtitle')} onBack={() => goBack()} headerEnd={<IconButton icon="plus" accessibilityLabel={t('routine.newGroup')} onPress={() => router.push('/group/new')} variant="primary" />} testID="groups">
       {groups.length === 0 ? (
         <Card>
           <EmptyState icon="layers" title={t('routine.noGroups')} body={t('routine.noGroupsSubtitle')} actionLabel={t('routine.newGroup')} onAction={() => router.push('/group/new')} compact />

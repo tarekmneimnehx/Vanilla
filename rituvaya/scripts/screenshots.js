@@ -136,6 +136,23 @@ async function main() {
   }
   await click('My Routine');
   await shot('16-routine');
+  // Adding an item: the header arrow must step back through the flow, not dismiss
+  // it and lose what was typed, and must never be a dead button.
+  await clickLocator(page.getByRole('button', { name: 'Add item' }).first());
+  await page.getByPlaceholder('e.g. Vitamin D, Magnesium').fill('Ashwagandha');
+  await click('Enter manually');
+  await page.getByText('More details').first().waitFor({ timeout: 10000 });
+  await shot('16b-add-item-details');
+  await clickLocator(page.getByRole('button', { name: 'Go back' }).first());
+  await page.waitForTimeout(600);
+  if (!(await page.getByPlaceholder('e.g. Vitamin D, Magnesium').isVisible().catch(() => false))) {
+    errors.push('add-item: header back did not return to the catalog step');
+  }
+  await clickLocator(page.getByRole('button', { name: 'Go back' }).first());
+  await page.waitForTimeout(600);
+  if (await page.getByText('New item', { exact: true }).first().isVisible().catch(() => false)) {
+    errors.push('add-item: header back did not leave the add-item sheet');
+  }
   await clickLocator(page.getByRole('button', { name: /Vitamin D3 \(Demo\)/ }).first());
   await page.waitForTimeout(600);
   await shot('17-item-detail');

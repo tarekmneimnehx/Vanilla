@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { useRouter } from 'expo-router';
 import { clampGoalMl, fromMl, progressRatio, toMl } from '@/domain/hydration/units';
 import { goalOn, totalFor } from '@/domain/services/hydrationService';
 import type { HydrationEntry } from '@/domain/types';
@@ -8,6 +7,7 @@ import { useI18n } from '@/i18n';
 import { formatTime, formatVolume } from '@/i18n/format';
 import { useFormatContext, useSnapshot, useStore, useStreaks, useToday } from '@/state/context';
 import { useTheme } from '@/ui/ThemeProvider';
+import { useGoBack } from '@/ui/useGoBack';
 import { Button, IconButton } from '@/ui/components/Button';
 import { Card } from '@/ui/components/Card';
 import { Chip } from '@/ui/components/Chip';
@@ -24,7 +24,7 @@ import { haptic } from '@/ui/haptics';
 
 export default function HydrationScreen() {
   const theme = useTheme();
-  const router = useRouter();
+  const goBack = useGoBack();
   const store = useStore();
   const toast = useToast();
   const { t, language, n } = useI18n();
@@ -94,7 +94,7 @@ export default function HydrationScreen() {
   };
 
   return (
-    <Screen title={t('hydration.title')} onBack={() => router.back()} keyboard testID="hydration">
+    <Screen title={t('hydration.title')} onBack={() => goBack()} keyboard testID="hydration">
       <Card style={{ alignItems: 'center', gap: theme.spacing.md }}>
         <HydrationGlass ratio={progressRatio(totalMl, goalMl)} width={132} height={168} accessibilityLabel={t('a11y.waterGlass', { amount: formatVolume(totalMl, unit, language), goal: formatVolume(goalMl, unit, language) })}>
           <Text variant="numeral" align="center" ltr style={{ color: progressRatio(totalMl, goalMl) > 0.55 ? '#FFFFFF' : theme.colors.text }}>

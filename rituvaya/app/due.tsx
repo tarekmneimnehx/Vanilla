@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import type { OccurrenceView } from '@/domain/logging/status';
 import { useI18n } from '@/i18n';
 import { useIndexes, useSnapshot, useStore } from '@/state/context';
 import { useTheme } from '@/ui/ThemeProvider';
+import { useGoBack } from '@/ui/useGoBack';
 import { Button } from '@/ui/components/Button';
 import { Card } from '@/ui/components/Card';
 import { EmptyState } from '@/ui/components/EmptyState';
@@ -16,7 +17,7 @@ import { useDoseActions } from '@/features/dose/useDoseActions';
 /** Opened from a notification: shows exactly the occurrences the alert was about. */
 export default function DueScreen() {
   const theme = useTheme();
-  const router = useRouter();
+  const goBack = useGoBack();
   const store = useStore();
   const { t } = useI18n();
   const idx = useIndexes();
@@ -30,10 +31,10 @@ export default function DueScreen() {
   const liveSelected = selected ? (views.find((v) => v.occurrence.key === selected.occurrence.key) ?? null) : null;
 
   return (
-    <Screen title={t('dose.dueScreen')} subtitle={t('dose.dueScreenSubtitle')} onBack={() => router.back()} testID="due">
+    <Screen title={t('dose.dueScreen')} subtitle={t('dose.dueScreenSubtitle')} onBack={() => goBack()} testID="due">
       {views.length === 0 ? (
         <Card>
-          <EmptyState icon="check-circle" title={t('dose.dueScreenEmpty')} compact actionLabel={t('common.close')} onAction={() => router.back()} />
+          <EmptyState icon="check-circle" title={t('dose.dueScreenEmpty')} compact actionLabel={t('common.close')} onAction={() => goBack()} />
         </Card>
       ) : (
         <Card style={{ gap: 4 }}>

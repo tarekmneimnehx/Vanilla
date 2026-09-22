@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Linking, Platform, View } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useI18n } from '@/i18n';
 import { formatTime } from '@/i18n/format';
 import { useFormatContext, useSnapshot, useStore } from '@/state/context';
 import { useTheme } from '@/ui/ThemeProvider';
+import { useGoBack } from '@/ui/useGoBack';
 import { Button } from '@/ui/components/Button';
 import { Card } from '@/ui/components/Card';
 import { Badge, SectionHeader } from '@/ui/components/Controls';
@@ -16,7 +16,7 @@ import { useToast } from '@/ui/components/Toast';
 
 export default function NotificationStatusScreen() {
   const theme = useTheme();
-  const router = useRouter();
+  const goBack = useGoBack();
   const store = useStore();
   const toast = useToast();
   const { t } = useI18n();
@@ -44,7 +44,7 @@ export default function NotificationStatusScreen() {
   };
   const upcoming = snapshot.notificationRecords.slice(0, 8);
   return (
-    <Screen title={t('notifications.status.title')} onBack={() => router.back()} testID="settings-notifications">
+    <Screen title={t('notifications.status.title')} onBack={() => goBack()} testID="settings-notifications">
       <Card style={{ gap: theme.spacing.md }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm }}>
           <Icon name={granted ? 'bell' : 'bell-off'} size={22} color={granted ? theme.colors.primary : theme.colors.danger} mirror={false} />

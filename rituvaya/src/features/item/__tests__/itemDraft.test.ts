@@ -6,8 +6,8 @@ const entry: CatalogEntry = {
   name: 'Vitamin D',
   kind: 'supplement',
   forms: ['capsule'],
+  aliases: [],
   defaultUnit: 'IU',
-  synonyms: [],
 };
 
 describe('hasOptionalDetails', () => {

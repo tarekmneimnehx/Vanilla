@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { useRouter } from 'expo-router';
 import { clampGoalMl, fromMl, toMl } from '@/domain/hydration/units';
 import { goalOn } from '@/domain/services/hydrationService';
 import { useI18n } from '@/i18n';
 import { formatDuration } from '@/i18n/format';
 import { useSnapshot, useStore, useToday } from '@/state/context';
 import { useTheme } from '@/ui/ThemeProvider';
+import { useGoBack } from '@/ui/useGoBack';
 import { Button } from '@/ui/components/Button';
 import { Card } from '@/ui/components/Card';
 import { Chip } from '@/ui/components/Chip';
@@ -18,7 +18,7 @@ import { useToast } from '@/ui/components/Toast';
 
 export default function HydrationSettingsScreen() {
   const theme = useTheme();
-  const router = useRouter();
+  const goBack = useGoBack();
   const store = useStore();
   const toast = useToast();
   const today = useToday();
@@ -50,7 +50,7 @@ export default function HydrationSettingsScreen() {
     setCustomQuick('');
   };
   return (
-    <Screen title={t('settings.sections.hydration')} onBack={() => router.back()} keyboard testID="settings-hydration">
+    <Screen title={t('settings.sections.hydration')} onBack={() => goBack()} keyboard testID="settings-hydration">
       <SectionHeader title={t('settings.hydrationGoal')} />
       <Card style={{ gap: theme.spacing.md }}>
         <Field placeholder={t('hydration.goalPlaceholder', { unit: unitShort })} value={goalDraft} onChangeText={setGoalDraft} keyboardType="decimal-pad" suffix={unitShort} error={goalError} ltr hint={t('onboarding.hydration.subtitle')} />

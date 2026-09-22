@@ -21,16 +21,23 @@ export interface AddItemFlowProps {
   /** Called whenever the step changes (used by hosts to update their header). */
   onStepChange?: (step: AddItemStep) => void;
   initialStep?: AddItemStep;
+  /**
+   * Drives the step from the host. Pass it together with `onStepChange` when the
+   * host owns a control that has to move between steps — the New item screen's
+   * header back, which otherwise could only dismiss the whole sheet.
+   */
+  step?: AddItemStep;
 }
 
 /** Catalog search → item details → schedule. Shared by the New item screen and onboarding. */
-export function AddItemFlow({ onDone, onCancel, onStepChange, initialStep = 'search' }: AddItemFlowProps) {
+export function AddItemFlow({ onDone, onCancel, onStepChange, initialStep = 'search', step: controlledStep }: AddItemFlowProps) {
   const theme = useTheme();
   const store = useStore();
   const toast = useToast();
   const today = useToday();
   const { t } = useI18n();
-  const [step, setStepState] = useState<AddItemStep>(initialStep);
+  const [uncontrolledStep, setStepState] = useState<AddItemStep>(initialStep);
+  const step = controlledStep ?? uncontrolledStep;
   const [draft, setDraft] = useState<ItemDraft>(() => emptyDraft());
   const [errors, setErrors] = useState<DraftErrors>({});
   const [schedule, setSchedule] = useState<ScheduleDraft>(() => emptyScheduleDraft(today, { kind: 'exact', time: '08:00' }));
