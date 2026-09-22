@@ -50,6 +50,7 @@
     },
     "plugins": [
       "./plugins/withLocalOnlyNotifications",
+      "./plugins/withSceneLifecycle",
       "expo-router",
       [
         "expo-notifications",
