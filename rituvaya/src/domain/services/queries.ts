@@ -157,7 +157,12 @@ export function computeStreaks(state: DataState, idx: Indexes, today: LocalDate,
 }
 
 export function remindersFor(schedule: Schedule | undefined, settings: Settings): ReminderConfig {
-  const base: ReminderConfig = { enabled: settings.reminders.enabled, repeatCount: settings.reminders.repeatCount, repeatIntervalMinutes: settings.reminders.repeatIntervalMinutes };
+  const base: ReminderConfig = {
+    enabled: settings.reminders.enabled,
+    repeatCount: settings.reminders.repeatCount,
+    repeatIntervalMinutes: settings.reminders.repeatIntervalMinutes,
+    mode: settings.reminders.mode ?? 'standard',
+  };
   if (!schedule?.reminders) return base;
   return { ...base, ...schedule.reminders, enabled: settings.reminders.enabled && schedule.reminders.enabled };
 }

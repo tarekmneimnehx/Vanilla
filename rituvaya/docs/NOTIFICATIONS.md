@@ -44,3 +44,24 @@ Occurrences are identified by local date + slot, never by an epoch, so a time zo
 - Custom sounds ("Soft chime", "Water drop") require the native build; Expo Go plays the device default.
 - Expo Go on Android does not support remote push, which is irrelevant here, but Expo Go may also reset some native preferences (for example forced RTL) between launches; use a development build for final checks.
 - Notification delivery is never guaranteed by either OS; the app always shows overdue doses in Today so nothing is lost when an alert is missed.
+
+## Reminder style: standard and insistent
+
+`ReminderSettings.mode` (overridable per schedule via `ReminderConfig.mode`) chooses how hard a reminder pushes:
+
+- **standard** — the due alert plus the configured repeats (default 3, every 15 minutes).
+- **insistent** — replaces those with an alert every 2 minutes, up to 10 times, stopping as soon as the occurrence becomes final. The constants are `INSISTENT_REPEAT_COUNT` and `INSISTENT_REPEAT_INTERVAL_MINUTES` in `src/domain/notifications/planner.ts`; the cap exists so one dose cannot consume the whole pending budget. The settings screen hides the repeat controls in this mode, because insistent ignores them.
+
+The field is optional and absent on records written before it existed; every reader treats a missing value as `standard`.
+
+**This is not an alarm, and the UI says so.** iOS silences it like any notification when the ringer switch is off.
+
+## What a real alarm would take
+
+A true alarm — rings through silent mode and Focus, full-screen with Stop/Snooze, keeps sounding until dismissed — is possible on iOS 26 and later through **AlarmKit**, but not from `expo-notifications`. Investigated September 2026:
+
+- `expo-alarm-kit` (MIT, v0.1.11) wraps it with `requestAuthorization`, `scheduleAlarm`, `scheduleRepeatingAlarm`, `cancelAlarm`, custom sounds, Stop/Snooze labels, and a launch payload — enough to log the dose when the user hits Stop.
+- It requires an **iOS deployment target of 26.0**, which would drop every older iPhone. Keeping a lower target means writing our own module that weak-links AlarmKit behind `@available(iOS 26, *)`.
+- It requires an **App Groups entitlement**, which needs a **paid** Apple Developer Program membership. A free Personal Team cannot sign it.
+
+`Critical Alerts` would break through the silent switch without AlarmKit, but that entitlement requires an application to Apple and explicit approval.

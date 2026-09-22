@@ -20,6 +20,25 @@ export interface DoseAlertSource {
   reminders: ReminderConfig;
 }
 
+/**
+ * Insistent reminders replace the configured repeats rather than adding to them:
+ * often enough to be hard to sleep through, capped so a single dose cannot eat
+ * the whole pending-notification budget.
+ */
+export const INSISTENT_REPEAT_COUNT = 10;
+export const INSISTENT_REPEAT_INTERVAL_MINUTES = 2;
+
+/** The repeats a reminder config asks for, resolved through its mode. */
+export function repeatPlanFor(reminders: ReminderConfig): { count: number; intervalMinutes: number } {
+  if (reminders.mode === 'insistent') {
+    return { count: INSISTENT_REPEAT_COUNT, intervalMinutes: INSISTENT_REPEAT_INTERVAL_MINUTES };
+  }
+  return {
+    count: Math.max(0, Math.min(10, Math.floor(reminders.repeatCount))),
+    intervalMinutes: Math.max(1, reminders.repeatIntervalMinutes),
+  };
+}
+
 export interface HydrationPlan {
   enabled: boolean;
   intervalMinutes: number;
@@ -76,8 +95,8 @@ function alertsForDose(source: DoseAlertSource, input: PlannerInput): RawAlert[]
     base.push(state.snoozedUntil);
     repeatIndexes = [-1];
   } else if (source.reminders.enabled) {
-    const count = Math.max(0, Math.min(10, Math.floor(source.reminders.repeatCount)));
-    const interval = Math.max(1, source.reminders.repeatIntervalMinutes) * 60_000;
+    const { count, intervalMinutes } = repeatPlanFor(source.reminders);
+    const interval = intervalMinutes * 60_000;
     for (let k = 0; k <= count; k += 1) {
       base.push(view.occurrence.scheduledAt + k * interval);
       repeatIndexes.push(k);

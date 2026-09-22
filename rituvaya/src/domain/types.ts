@@ -63,11 +63,21 @@ export type Recurrence =
   | { type: 'cycle'; onDays: number; offDays: number }
   | { type: 'asNeeded' };
 
+/**
+ * How hard a reminder pushes. `insistent` ignores the repeat fields and alerts
+ * every couple of minutes until the dose is resolved, for doses that must not be
+ * slept through. It is still a notification: iOS silences it like any other when
+ * the ringer switch is off, so it is not an alarm and must not be labelled as one.
+ */
+export type ReminderMode = 'standard' | 'insistent';
+
 export interface ReminderConfig {
   enabled: boolean;
   /** Extra alerts after the due alert. */
   repeatCount: number;
   repeatIntervalMinutes: number;
+  /** Absent on records written before this existed; read it as 'standard'. */
+  mode?: ReminderMode;
 }
 
 export interface Schedule {
@@ -165,6 +175,8 @@ export interface ReminderSettings {
   enabled: boolean;
   repeatCount: number;
   repeatIntervalMinutes: number;
+  /** Default for every item; a schedule may override it. */
+  mode?: ReminderMode;
   snoozeMinutes: number;
   remindTonightTime: TimeOfDay;
   quietHours: QuietHours;

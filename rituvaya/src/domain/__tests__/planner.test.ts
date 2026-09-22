@@ -1,4 +1,4 @@
-import { applyQuietHours, planNotifications, reconcile, remindTonightAt } from '../notifications/planner';
+import { INSISTENT_REPEAT_COUNT, INSISTENT_REPEAT_INTERVAL_MINUTES, applyQuietHours, planNotifications, reconcile, remindTonightAt, repeatPlanFor } from '../notifications/planner';
 import { buildView } from '../logging/status';
 import { setDeviceTimeZone } from '../time/clock';
 import type { Occurrence, QuietHours, ReminderConfig } from '../types';
@@ -121,5 +121,44 @@ describe('notification planner', () => {
     expect(remindTonightAt(morning, tz, '21:00')).toEqual({ at: Date.UTC(2026, 8, 20, 21, 0), usedFallback: false });
     const late = Date.UTC(2026, 8, 20, 21, 30);
     expect(remindTonightAt(late, tz, '21:00')).toEqual({ at: late + 60 * minute, usedFallback: true });
+  });
+});
+
+describe('insistent reminders', () => {
+  const now = Date.UTC(2026, 8, 20, 7, 0);
+  const insistent: ReminderConfig = { ...reminders, mode: 'insistent' };
+
+  it('replaces the configured repeats rather than adding to them', () => {
+    expect(repeatPlanFor(reminders)).toEqual({ count: 3, intervalMinutes: 15 });
+    expect(repeatPlanFor(insistent)).toEqual({ count: INSISTENT_REPEAT_COUNT, intervalMinutes: INSISTENT_REPEAT_INTERVAL_MINUTES });
+    // A config that asks for one lazy repeat still gets the full insistent run.
+    expect(repeatPlanFor({ ...insistent, repeatCount: 1, repeatIntervalMinutes: 60 })).toEqual(repeatPlanFor(insistent));
+  });
+
+  it('treats a missing mode as standard, so records saved before it keep their behaviour', () => {
+    const { mode, ...withoutMode } = insistent;
+    expect(mode).toBe('insistent');
+    expect(repeatPlanFor(withoutMode)).toEqual(repeatPlanFor(reminders));
+  });
+
+  it('alerts every two minutes until the dose is resolved', () => {
+    const view = buildView(occ('a', 8 * 60), null, null, now, policy);
+    const plan = planNotifications({ now, tz, horizonMs: 7 * 86_400_000, budget: 60, doses: [{ view, reminders: insistent }], quietHours: quietOff, hydration: null });
+    expect(plan.map((n) => (n.fireAt - view.occurrence.scheduledAt) / minute)).toEqual([0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20]);
+  });
+
+  it('stops once the dose is final, so acting on it silences the rest', () => {
+    const takenLog = { id: 'l', itemId: 'a', occurrenceKey: occ('a', 8 * 60).key, action: 'taken' as const, at: now, localDate: '2026-09-20', tz, amount: null, unit: null, reason: null, note: null, scheduledAt: null, itemNameSnapshot: '', doseSnapshot: '', source: 'app' as const, createdAt: now, updatedAt: now, deletedAt: null };
+    const view = buildView(occ('a', 8 * 60), takenLog, null, now, policy);
+    const plan = planNotifications({ now, tz, horizonMs: 7 * 86_400_000, budget: 60, doses: [{ view, reminders: insistent }], quietHours: quietOff, hydration: null });
+    expect(plan).toHaveLength(0);
+  });
+
+  it('cannot starve other items of the pending-notification budget', () => {
+    const a = buildView(occ('a', 8 * 60), null, null, now, policy);
+    const b = buildView(occ('b', 9 * 60), null, null, now, policy);
+    const plan = planNotifications({ now, tz, horizonMs: 7 * 86_400_000, budget: 12, doses: [{ view: a, reminders: insistent }, { view: b, reminders: insistent }], quietHours: quietOff, hydration: null });
+    expect(plan).toHaveLength(12);
+    expect(plan.some((n) => n.itemIds.includes('b'))).toBe(true);
   });
 });

@@ -186,6 +186,16 @@ async function main() {
   await click('Reminder settings');
   await page.waitForTimeout(500);
   await shot('21b-reminder-settings');
+  // Insistent mode hides the repeat controls it overrides, and says plainly that
+  // it is still a notification rather than an alarm.
+  await click('Insistent');
+  await page.waitForTimeout(700);
+  if (await page.getByText('Minutes between reminders', { exact: true }).first().isVisible().catch(() => false)) {
+    errors.push('reminders: insistent mode still shows the repeat controls it ignores');
+  }
+  await shot('21b2-reminder-insistent');
+  await click('Standard');
+  await page.waitForTimeout(500);
   await clickLocator(page.getByRole('button', { name: 'Go back' }).last());
   await page.waitForTimeout(300);
   await click('Notification status');

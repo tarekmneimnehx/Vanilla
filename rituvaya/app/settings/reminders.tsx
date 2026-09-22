@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import type { MissedPolicy, NotificationSound, QuietHours, ReminderSettings } from '@/domain/types';
+import type { MissedPolicy, NotificationSound, QuietHours, ReminderMode, ReminderSettings } from '@/domain/types';
 import { useI18n } from '@/i18n';
 import { formatDuration } from '@/i18n/format';
 import { useFormatContext, useSnapshot, useStore } from '@/state/context';
@@ -21,6 +21,7 @@ export default function ReminderSettingsScreen() {
   const format = useFormatContext();
   const snapshot = useSnapshot();
   const r = snapshot.settings.reminders;
+  const mode: ReminderMode = r.mode ?? 'standard';
   const missed = snapshot.settings.missed;
   const patch = (changes: Partial<ReminderSettings>) => void store.updateSettings((s) => ({ ...s, reminders: { ...s.reminders, ...changes } }));
   const patchQuiet = (changes: Partial<QuietHours>) => patch({ quietHours: { ...r.quietHours, ...changes } });
@@ -37,16 +38,33 @@ export default function ReminderSettingsScreen() {
     <Screen title={t('settings.reminders')} onBack={() => goBack()} testID="settings-reminders">
       <Card style={{ gap: theme.spacing.xs }}>
         <SwitchRow label={t('settings.remindersEnabled')} value={r.enabled} onChange={(v) => patch({ enabled: v })} />
-        <Row label={t('settings.repeatCount')}>
-          <Stepper value={r.repeatCount} min={0} max={6} onChange={(v) => patch({ repeatCount: v })} accessibilityLabel={t('settings.repeatCount')} />
-        </Row>
-        <Row label={t('settings.repeatInterval')}>
-          <Stepper value={r.repeatIntervalMinutes} min={5} max={120} step={5} onChange={(v) => patch({ repeatIntervalMinutes: v })} accessibilityLabel={t('settings.repeatInterval')} />
-        </Row>
+        {/* Insistent mode replaces these, so showing them would be a lie about what happens. */}
+        {mode === 'standard' ? (
+          <>
+            <Row label={t('settings.repeatCount')}>
+              <Stepper value={r.repeatCount} min={0} max={6} onChange={(v) => patch({ repeatCount: v })} accessibilityLabel={t('settings.repeatCount')} />
+            </Row>
+            <Row label={t('settings.repeatInterval')}>
+              <Stepper value={r.repeatIntervalMinutes} min={5} max={120} step={5} onChange={(v) => patch({ repeatIntervalMinutes: v })} accessibilityLabel={t('settings.repeatInterval')} />
+            </Row>
+          </>
+        ) : null}
         <Row label={t('settings.snooze')}>
           <Stepper value={r.snoozeMinutes} min={5} max={120} step={5} onChange={(v) => patch({ snoozeMinutes: v })} accessibilityLabel={t('settings.snooze')} format={(v) => formatDuration(v, language)} />
         </Row>
         <TimeField label={t('settings.remindTonight')} value={r.remindTonightTime} onChange={(v) => patch({ remindTonightTime: v })} format={format} />
+      </Card>
+
+      <SectionHeader title={t('settings.reminderMode')} />
+      <Card style={{ gap: theme.spacing.sm }}>
+        <View style={{ gap: 8 }}>
+          {(['standard', 'insistent'] as ReminderMode[]).map((value) => (
+            <Chip key={value} label={t(`settings.reminderModes.${value}` as const)} selected={mode === value} onPress={() => patch({ mode: value })} />
+          ))}
+        </View>
+        <Text variant="small" color="secondary">
+          {t(`settings.reminderModeHints.${mode}` as const)}
+        </Text>
       </Card>
 
       <SectionHeader title={t('settings.quietHours')} />

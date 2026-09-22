@@ -22,6 +22,7 @@ export function defaultSettings(today: string, tz: string): Settings {
       enabled: true,
       repeatCount: 3,
       repeatIntervalMinutes: 15,
+      mode: 'standard',
       snoozeMinutes: 10,
       remindTonightTime: '21:00',
       quietHours: { enabled: false, start: '22:00', end: '07:00', mode: 'delay' },
