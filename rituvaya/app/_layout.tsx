@@ -24,6 +24,17 @@ void SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
 /** How long startup may wait on storage and fonts before rendering regardless. */
 const STARTUP_TIMEOUT_MS = 10_000;
+/**
+ * Last resort, outside React: the splash is hidden on a timer from the moment
+ * this module evaluates. Holding it depends on startup reaching hideAsync, and
+ * anything that stops it — a promise that never settles, a render that never
+ * happens — otherwise leaves the logo on screen with the app alive behind it,
+ * indistinguishable from a crash.
+ */
+const SPLASH_TIMEOUT_MS = 8_000;
+setTimeout(() => {
+  void SplashScreen.hideAsync().catch(() => undefined);
+}, SPLASH_TIMEOUT_MS);
 
 function deviceLanguage(): Language | null {
   try {
