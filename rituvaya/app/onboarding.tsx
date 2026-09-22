@@ -61,7 +61,9 @@ export default function OnboardingScreen() {
 
   const chooseLanguage = async (code: Language) => {
     await store.updateSettings((s) => ({ ...s, language: code }));
-    await applyLayoutDirection(isRTL(code));
+    // No reload here: it would restart the bundle and drop the user back on
+    // this step. Screens mirror themselves, and forceRTL lands on next launch.
+    await applyLayoutDirection(isRTL(code), { reload: false });
   };
   const saveName = () => {
     void store.updateSettings((s) => ({ ...s, preferredName: name.trim() }));
