@@ -6,7 +6,7 @@ import { withValueFrom } from '@/domain/dated';
 import { clampGoalMl, fromMl, toMl } from '@/domain/hydration/units';
 import { anchorsOn } from '@/domain/schedule/slots';
 import { goalOn } from '@/domain/services/hydrationService';
-import type { Anchors, Language, ThemePreference, TimeFormat, VolumeUnit } from '@/domain/types';
+import type { Anchors, Language } from '@/domain/types';
 import { LANGUAGES, isRTL, useI18n } from '@/i18n';
 import { formatMinutes, formatVolume } from '@/i18n/format';
 import { useDay, useFormatContext, useIndexes, useSnapshot, useStore, useToday } from '@/state/context';
@@ -14,7 +14,7 @@ import { useTheme } from '@/ui/ThemeProvider';
 import { Button } from '@/ui/components/Button';
 import { Card } from '@/ui/components/Card';
 import { Chip } from '@/ui/components/Chip';
-import { Badge, ProgressBar, Segmented } from '@/ui/components/Controls';
+import { Badge, ProgressBar } from '@/ui/components/Controls';
 import { Field } from '@/ui/components/Field';
 import { Icon } from '@/ui/components/Icon';
 import { Divider, ListRow } from '@/ui/components/ListRow';
@@ -26,7 +26,7 @@ import { AddItemFlow } from '@/features/item/AddItemFlow';
 import { AnchorsEditor, validateAnchors } from './settings/day';
 import { formatItemDose } from '@/i18n/dose';
 
-const TOTAL_STEPS = 8;
+const TOTAL_STEPS = 7;
 
 export default function OnboardingScreen() {
   const theme = useTheme();
@@ -109,7 +109,6 @@ export default function OnboardingScreen() {
   const titles = [
     t('onboarding.language.title'),
     t('onboarding.name.title'),
-    t('onboarding.preferences.title'),
     t('onboarding.day.title'),
     t('onboarding.hydration.title'),
     t('onboarding.firstItem.title'),
@@ -119,7 +118,6 @@ export default function OnboardingScreen() {
   const subtitles = [
     t('onboarding.language.subtitle'),
     t('onboarding.name.subtitle'),
-    t('onboarding.preferences.subtitle'),
     t('onboarding.day.subtitle'),
     t('onboarding.hydration.subtitle'),
     t('onboarding.firstItem.subtitle'),
@@ -172,44 +170,15 @@ export default function OnboardingScreen() {
           </Card>
         ) : null}
 
-        {stepIndex === 2 ? (
-          <Card style={{ gap: theme.spacing.md }}>
-            <Text variant="smallStrong" color="secondary">
-              {t('onboarding.preferences.timeFormat')}
-            </Text>
-            <Segmented
-              options={(['system', '12h', '24h'] as TimeFormat[]).map((v) => ({ value: v, label: t(`settings.timeFormats.${v}` as const) }))}
-              value={settings.timeFormat}
-              onChange={(v) => void store.updateSettings((s) => ({ ...s, timeFormat: v }))}
-            />
-            <Text variant="smallStrong" color="secondary">
-              {t('onboarding.preferences.volumeUnit')}
-            </Text>
-            <Segmented
-              options={(['ml', 'floz'] as VolumeUnit[]).map((v) => ({ value: v, label: t(v === 'ml' ? 'hydration.ml' : 'hydration.floz') }))}
-              value={settings.volumeUnit}
-              onChange={(v) => void store.updateSettings((s) => ({ ...s, volumeUnit: v }))}
-            />
-            <Text variant="smallStrong" color="secondary">
-              {t('onboarding.preferences.theme')}
-            </Text>
-            <Segmented
-              options={(['system', 'light', 'dark'] as ThemePreference[]).map((v) => ({ value: v, label: t(`settings.themes.${v}` as const) }))}
-              value={settings.theme}
-              onChange={(v) => void store.updateSettings((s) => ({ ...s, theme: v }))}
-            />
-          </Card>
-        ) : null}
+        {stepIndex === 2 ? <AnchorsEditor value={anchors} onChange={setAnchors} error={anchorError} /> : null}
 
-        {stepIndex === 3 ? <AnchorsEditor value={anchors} onChange={setAnchors} error={anchorError} /> : null}
-
-        {stepIndex === 4 ? (
+        {stepIndex === 3 ? (
           <Card style={{ gap: theme.spacing.sm }}>
             <Field placeholder={t('onboarding.hydration.placeholder')} value={goalDraft} onChangeText={setGoalDraft} keyboardType="decimal-pad" suffix={unitShort} error={goalError} hint={t('onboarding.hydration.hint')} ltr autoFocus />
           </Card>
         ) : null}
 
-        {stepIndex === 5 ? (
+        {stepIndex === 4 ? (
           settings.onboarding.draft.firstItemId ? (
             <Card style={{ gap: theme.spacing.sm }}>
               <Text variant="bodyStrong">{t('item.created')}</Text>
@@ -222,13 +191,13 @@ export default function OnboardingScreen() {
               onStepChange={setItemStep}
               onDone={(itemId) => {
                 void store.updateSettings((s) => ({ ...s, onboarding: { ...s.onboarding, draft: { ...s.onboarding.draft, firstItemId: itemId } } }));
-                persistStep(6);
+                persistStep(5);
               }}
             />
           )
         ) : null}
 
-        {stepIndex === 6 ? (
+        {stepIndex === 5 ? (
           <Card style={{ gap: theme.spacing.sm }}>
             {day.views.length === 0 ? (
               <Text variant="small" color="secondary">
@@ -270,7 +239,7 @@ export default function OnboardingScreen() {
           </Card>
         ) : null}
 
-        {stepIndex === 7 ? (
+        {stepIndex === 6 ? (
           <Card style={{ gap: theme.spacing.md }}>
             {(['due', 'quiet', 'control'] as const).map((key) => (
               <View key={key} style={{ flexDirection: 'row', gap: theme.spacing.sm, alignItems: 'flex-start' }}>
@@ -302,23 +271,23 @@ export default function OnboardingScreen() {
         ) : null}
       </Animated.View>
 
-      {stepIndex === 5 && itemStep !== 'search' && !settings.onboarding.draft.firstItemId ? null : (
+      {stepIndex === 4 && itemStep !== 'search' && !settings.onboarding.draft.firstItemId ? null : (
       <View style={{ flexDirection: 'row', gap: theme.spacing.xs, alignItems: 'center', paddingTop: theme.spacing.sm }}>
         {stepIndex > 0 ? <Button label={t('common.back')} variant="ghost" onPress={back} /> : <View />}
         <View style={{ flex: 1 }} />
         {stepIndex === 0 ? <Button label={t('common.next')} iconEnd="arrow-right" onPress={next} /> : null}
         {stepIndex === 1 ? <Button label={name.trim() ? t('common.next') : t('common.skip')} iconEnd="arrow-right" onPress={saveName} /> : null}
         {stepIndex === 2 ? <Button label={t('common.next')} iconEnd="arrow-right" onPress={next} /> : null}
-        {stepIndex === 3 ? <Button label={t('common.next')} iconEnd="arrow-right" onPress={saveAnchors} /> : null}
-        {stepIndex === 4 ? (
+        {stepIndex === 2 ? <Button label={t('common.next')} iconEnd="arrow-right" onPress={saveAnchors} /> : null}
+        {stepIndex === 3 ? (
           <>
             <Chip label={t('common.skipForNow')} onPress={next} />
             <Button label={t('common.next')} iconEnd="arrow-right" onPress={() => void saveGoal()} />
           </>
         ) : null}
-        {stepIndex === 5 ? <Chip label={settings.onboarding.draft.firstItemId ? t('common.next') : t('common.skipForNow')} onPress={next} /> : null}
-        {stepIndex === 6 ? <Button label={t('common.next')} iconEnd="arrow-right" onPress={next} /> : null}
-        {stepIndex === 7 ? <Button label={t('onboarding.finish')} icon="check" size="lg" onPress={() => void finish()} /> : null}
+        {stepIndex === 4 ? <Chip label={settings.onboarding.draft.firstItemId ? t('common.next') : t('common.skipForNow')} onPress={next} /> : null}
+        {stepIndex === 5 ? <Button label={t('common.next')} iconEnd="arrow-right" onPress={next} /> : null}
+        {stepIndex === 6 ? <Button label={t('onboarding.finish')} icon="check" size="lg" onPress={() => void finish()} /> : null}
       </View>
       )}
     </Screen>

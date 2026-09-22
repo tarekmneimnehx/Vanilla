@@ -81,6 +81,26 @@ export function draftFromItem(item: Item): ItemDraft {
   };
 }
 
+/**
+ * True when the draft carries detail beyond its name, so the form can keep the
+ * optional fields collapsed for a new item without ever hiding what an existing
+ * one already holds. A generic name equal to the display name, and the units a
+ * catalog entry brings with it, are defaults rather than something typed.
+ */
+export function hasOptionalDetails(draft: ItemDraft): boolean {
+  const generic = draft.genericName.trim();
+  return Boolean(
+    (generic && generic !== draft.displayName.trim()) ||
+      draft.ingredients.trim() ||
+      draft.strengthValue.trim() ||
+      draft.purpose.trim() ||
+      draft.notes.trim() ||
+      draft.customFormLabel.trim() ||
+      draft.servingSize.trim() !== '1' ||
+      draft.doseAmount.trim() !== '1'
+  );
+}
+
 /** Applies a form change, moving unit defaults along unless the user typed a custom unit. */
 export function withForm(draft: ItemDraft, form: ItemForm): ItemDraft {
   const units = DOSE_UNITS_BY_FORM[form];
