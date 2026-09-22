@@ -22,6 +22,9 @@ import type { Language } from '@/domain/types';
 
 void SplashScreen.preventAutoHideAsync().catch(() => undefined);
 
+/** How long startup may wait on storage and fonts before rendering regardless. */
+const STARTUP_TIMEOUT_MS = 10_000;
+
 function deviceLanguage(): Language | null {
   try {
     const code = getLocales()[0]?.languageCode ?? null;
@@ -54,13 +57,14 @@ export default function RootLayout() {
   });
   const store = useMemo(() => new AppStore({ repo: createRepository(), deviceUses24h }), []);
   const [ready, setReady] = useState(false);
+  const [gaveUpWaiting, setGaveUpWaiting] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     store
       .init(deviceLanguage())
       .catch((error) => {
-        if (__DEV__) console.error('Store init failed', error);
+        console.error('Store init failed', error);
       })
       .finally(() => {
         if (!cancelled) setReady(true);
@@ -70,12 +74,27 @@ export default function RootLayout() {
     };
   }, [store]);
 
-  const fontsReady = fontsLoaded || Boolean(fontError);
+  // Nothing renders until storage and fonts settle, so a hanging promise would
+  // leave a blank screen with no way to tell what went wrong. Give up waiting
+  // and start anyway: the store falls back to defaults and fonts to the system
+  // face, which beats an app that never opens.
   useEffect(() => {
-    if (ready && fontsReady) void SplashScreen.hideAsync().catch(() => undefined);
-  }, [ready, fontsReady]);
+    const timer = setTimeout(() => setGaveUpWaiting(true), STARTUP_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, []);
+  useEffect(() => {
+    if (gaveUpWaiting && !(ready && (fontsLoaded || fontError))) {
+      console.warn(`Startup exceeded ${STARTUP_TIMEOUT_MS}ms (storage ready: ${ready}, fonts loaded: ${fontsLoaded}); continuing anyway.`);
+    }
+  }, [gaveUpWaiting, ready, fontsLoaded, fontError]);
 
-  if (!ready || !fontsReady) return <View style={{ flex: 1, backgroundColor: '#F7F5EF' }} />;
+  const fontsReady = fontsLoaded || Boolean(fontError) || gaveUpWaiting;
+  const storeReady = ready || gaveUpWaiting;
+  useEffect(() => {
+    if (storeReady && fontsReady) void SplashScreen.hideAsync().catch(() => undefined);
+  }, [storeReady, fontsReady]);
+
+  if (!storeReady || !fontsReady) return <View style={{ flex: 1, backgroundColor: '#F7F5EF' }} />;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
