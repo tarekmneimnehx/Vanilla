@@ -34,9 +34,10 @@ The fastest path uses Expo Go; the full path uses a development build (needed fo
    ```bash
    cd rituvaya
    npm install
-   npx expo start
+   npm run phone
    ```
-3. Scan the QR code with the iPhone camera (same Wi-Fi as the computer). If the network blocks it, run `npx expo start --tunnel`.
+   `npm run phone` is `expo start --tunnel --go --clear`: it serves through a tunnel rather than the local network and selects Expo Go directly, so no `s` keypress is needed and the phone does not have to be on the same Wi-Fi. Use plain `npx expo start` when the local network does work — it is faster.
+3. Scan the QR code with the iPhone camera. On the local-network variant the phone must be on the same Wi-Fi, and iOS must have granted Expo Go the **Local Network** permission (Settings › Privacy & Security › Local Network) or it cannot reach the computer.
 4. Local notifications work in Expo Go. Custom sounds do not (device default plays), and Expo Go can reset the forced RTL layout between launches; the in-app mirroring still applies.
 
 ### Option B: Development build on the phone (Mac with Xcode)

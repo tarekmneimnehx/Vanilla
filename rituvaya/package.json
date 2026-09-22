@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "start": "expo start",
+    "phone": "expo start --tunnel --go --clear",
     "start:dev-client": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
