@@ -9,7 +9,8 @@ const VIEWPORT = { width: 390, height: 844 };
 
 async function main() {
   const { chromium } = require('playwright');
-  const browser = await chromium.launch();
+  // CHROMIUM_PATH lets a sandbox with a pre-installed browser skip the download.
+  const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH, args: ['--no-sandbox'] } : {});
   const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: 'en-GB', timezoneId: 'Asia/Dubai' });
   const page = await context.newPage();
   const errors = [];
