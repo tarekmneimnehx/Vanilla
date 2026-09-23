@@ -4,6 +4,7 @@ export const es: Translation = {
   app: {
     name: 'Rituvaya',
     tagline: 'Un lugar tranquilo para lo que tomas y bebes.',
+    medicalDisclaimer: 'Rituvaya no ofrece consejo médico. Consulta a tu médico o farmacéutico antes de empezar, dejar o cambiar cualquier medicamento o suplemento.',
   },
   common: {
     next: 'Siguiente',
@@ -604,11 +605,9 @@ export const es: Translation = {
     demoLoaded: 'Datos de demostración añadidos',
     demoRemoved: 'Datos de demostración eliminados',
     about: 'Acerca de Rituvaya',
-    aboutBody: 'Rituvaya registra los suplementos, medicamentos y agua que introduces y te avisa a las horas que eliges. No ofrece consejo médico ni de dosificación.',
+    aboutBody: 'Rituvaya registra los suplementos, medicamentos y agua que introduces y te avisa a las horas que eliges.',
     version: 'Versión {version}',
-    translationNote: 'Las traducciones se generaron automáticamente y aún necesitan revisión de hablantes nativos.',
     restartForLayout: 'Reinicia la app para aplicar la nueva dirección del diseño.',
-    roadmap: 'Previsto para más adelante: inicio de sesión, copia en la nube, perfiles familiares, widgets, apps de reloj e integraciones de salud.',
   },
   notifications: {
     status: {

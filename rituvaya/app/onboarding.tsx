@@ -179,22 +179,31 @@ export default function OnboardingScreen() {
         ) : null}
 
         {stepIndex === 4 ? (
-          settings.onboarding.draft.firstItemId ? (
-            <Card style={{ gap: theme.spacing.sm }}>
-              <Text variant="bodyStrong">{t('item.created')}</Text>
-              <Text variant="small" color="secondary">
-                {t('onboarding.firstItem.skipHint')}
+          <>
+            {settings.onboarding.draft.firstItemId ? (
+              <Card style={{ gap: theme.spacing.sm }}>
+                <Text variant="bodyStrong">{t('item.created')}</Text>
+                <Text variant="small" color="secondary">
+                  {t('onboarding.firstItem.skipHint')}
+                </Text>
+              </Card>
+            ) : (
+              <AddItemFlow
+                onStepChange={setItemStep}
+                onDone={(itemId) => {
+                  void store.updateSettings((s) => ({ ...s, onboarding: { ...s.onboarding, draft: { ...s.onboarding.draft, firstItemId: itemId } } }));
+                  persistStep(5);
+                }}
+              />
+            )}
+            {/* Shown where people first enter what they take, not repeated in every form step
+                (App Store guideline 1.4.1). Also in Settings › About. */}
+            {itemStep === 'search' || settings.onboarding.draft.firstItemId ? (
+              <Text variant="caption" color="muted" testID="medical-disclaimer">
+                {t('app.medicalDisclaimer')}
               </Text>
-            </Card>
-          ) : (
-            <AddItemFlow
-              onStepChange={setItemStep}
-              onDone={(itemId) => {
-                void store.updateSettings((s) => ({ ...s, onboarding: { ...s.onboarding, draft: { ...s.onboarding.draft, firstItemId: itemId } } }));
-                persistStep(5);
-              }}
-            />
-          )
+            ) : null}
+          </>
         ) : null}
 
         {stepIndex === 5 ? (

@@ -4,6 +4,7 @@ export const fr: Translation = {
   app: {
     name: 'Rituvaya',
     tagline: 'Un espace calme pour ce que vous prenez et buvez.',
+    medicalDisclaimer: 'Rituvaya ne donne pas de conseil médical. Demandez l’avis de votre médecin ou de votre pharmacien avant de commencer, d’arrêter ou de modifier un médicament ou un complément.',
   },
   common: {
     next: 'Suivant',
@@ -565,7 +566,7 @@ export const fr: Translation = {
     repeatInterval: 'Minutes entre les rappels',
     reminderMode: 'Style de rappel',
     reminderModes: { standard: 'Standard', insistent: 'Insistant' },
-    reminderModeHints: { standard: 'L alerte à l heure prévue, plus les répétitions réglées ci-dessus.', insistent: 'Une alerte toutes les 2 minutes, jusqu à 10 fois, jusqu à ce que vous marquiez la prise ou l oubli. Comme toute notification, elle reste silencieuse quand le bouton de sonnerie est coupé : ce n est donc pas une alarme.' },
+    reminderModeHints: { standard: 'L’alerte à l’heure prévue, plus les répétitions réglées ci-dessus.', insistent: 'Une alerte toutes les 2 minutes, jusqu’à 10 fois, jusqu’à ce que vous marquiez la dose comme prise ou passée. Comme toute notification, elle reste silencieuse quand le bouton de sonnerie est coupé : ce n’est donc pas une alarme.' },
     snooze: 'Durée du report',
     remindTonight: 'Heure du rappel du soir',
     quietHours: 'Heures calmes',
@@ -604,11 +605,9 @@ export const fr: Translation = {
     demoLoaded: 'Données de démo ajoutées',
     demoRemoved: 'Données de démo retirées',
     about: 'À propos de Rituvaya',
-    aboutBody: 'Rituvaya enregistre les compléments, médicaments et l’eau que vous saisissez et vous rappelle aux heures que vous choisissez. Elle ne donne aucun conseil médical ni de dosage.',
+    aboutBody: 'Rituvaya enregistre les compléments, médicaments et l’eau que vous saisissez et vous rappelle aux heures que vous choisissez.',
     version: 'Version {version}',
-    translationNote: 'Les traductions ont été générées et doivent encore être relues par des locuteurs natifs.',
     restartForLayout: 'Redémarrez l’app pour appliquer le nouveau sens de lecture.',
-    roadmap: 'Prévu plus tard : connexion, sauvegarde cloud, profils familiaux, widgets, apps montre et intégrations santé.',
   },
   notifications: {
     status: {

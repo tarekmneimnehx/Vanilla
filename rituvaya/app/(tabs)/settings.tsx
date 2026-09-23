@@ -36,7 +36,9 @@ export default function SettingsScreen() {
   const { settings } = snapshot;
   const [picker, setPicker] = useState<Picker>(null);
   const [nameDraft, setNameDraft] = useState(settings.preferredName);
-  const version = Constants.expoConfig?.version ?? '0.1.0';
+  // Embedded at build time on devices; the web preview may not have it, and a
+  // guessed fallback would show a wrong version, so the line is hidden instead.
+  const version = Constants.expoConfig?.version ?? null;
 
   const setLanguage = async (code: Language) => {
     await store.updateSettings((s) => ({ ...s, language: code }));
@@ -97,15 +99,15 @@ export default function SettingsScreen() {
         <Text variant="small" color="secondary">
           {t('settings.aboutBody')}
         </Text>
-        <Text variant="small" color="secondary">
-          {t('settings.roadmap')}
+        {/* App Store guideline 1.4.1: health apps should tell people to check with a doctor. */}
+        <Text variant="smallStrong" color="secondary" testID="medical-disclaimer">
+          {t('app.medicalDisclaimer')}
         </Text>
-        <Text variant="caption" color="muted">
-          {t('settings.translationNote')}
-        </Text>
-        <Text variant="caption" color="muted">
-          {t('settings.version', { version })}
-        </Text>
+        {version ? (
+          <Text variant="caption" color="muted">
+            {t('settings.version', { version })}
+          </Text>
+        ) : null}
       </Card>
 
       <Sheet visible={picker === 'language'} onClose={() => setPicker(null)} title={t('settings.language')} scroll={false}>

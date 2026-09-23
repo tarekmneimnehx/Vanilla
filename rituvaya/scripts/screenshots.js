@@ -93,6 +93,10 @@ async function main() {
   await click('Next');
   await page.getByPlaceholder('e.g. Vitamin D, Magnesium').fill('vit d');
   await shot('05-onboarding-catalog');
+  // App Store guideline 1.4.1: the doctor reminder has to be where people enter what they take.
+  if (!(await page.getByTestId('medical-disclaimer').first().isVisible().catch(() => false))) {
+    errors.push('onboarding: medical disclaimer missing on the first-item step');
+  }
   await click('Vitamin D3');
   await shot('06-onboarding-item-details');
   await click('Next');
@@ -109,6 +113,10 @@ async function main() {
   // Load demo data for richer screens.
   await click('Settings');
   await shot('12-settings');
+  const disclaimer = page.getByTestId('medical-disclaimer').first();
+  await disclaimer.scrollIntoViewIfNeeded().catch(() => undefined);
+  if (!(await disclaimer.isVisible().catch(() => false))) errors.push('settings: medical disclaimer missing from About');
+  await shot('12b-settings-about');
   await click('Export my data');
   await click('Load demo data');
   await page.waitForTimeout(1500);

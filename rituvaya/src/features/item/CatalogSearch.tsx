@@ -19,7 +19,7 @@ export interface CatalogSearchProps {
 /** Search the small generic catalog, or continue with a manual entry using the typed name. */
 export function CatalogSearch({ onPick, onManual }: CatalogSearchProps) {
   const theme = useTheme();
-  const { t, language } = useI18n();
+  const { t } = useI18n();
   const [query, setQuery] = useState('');
   const results = useMemo(() => searchCatalog(query, 8), [query]);
   return (
@@ -48,9 +48,6 @@ export function CatalogSearch({ onPick, onManual }: CatalogSearchProps) {
         </Card>
       ) : null}
       <Button label={query.trim() ? `${t('item.manualEntry')}: “${query.trim()}”` : t('item.manualEntry')} variant="secondary" icon="edit-3" onPress={() => onManual(query)} full />
-      <Text variant="caption" color="muted" style={{ opacity: 0.8 }}>
-        {language === 'en' ? '' : t('settings.translationNote')}
-      </Text>
     </View>
   );
 }

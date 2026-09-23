@@ -6,6 +6,7 @@ export const en = {
   app: {
     name: 'Rituvaya',
     tagline: 'A calm place for what you take and drink.',
+    medicalDisclaimer: 'Rituvaya does not give medical advice. Check with your doctor or pharmacist before starting, stopping or changing any medication or supplement.',
   },
   common: {
     next: 'Next',
@@ -606,11 +607,9 @@ export const en = {
     demoLoaded: 'Demo data added',
     demoRemoved: 'Demo data removed',
     about: 'About Rituvaya',
-    aboutBody: 'Rituvaya records the supplements, medications and water you enter, and reminds you at the times you choose. It does not give medical or dosing advice.',
+    aboutBody: 'Rituvaya records the supplements, medications and water you enter, and reminds you at the times you choose.',
     version: 'Version {version}',
-    translationNote: 'Translations were generated and still need native-speaker review.',
     restartForLayout: 'Restart the app to apply the new layout direction.',
-    roadmap: 'Planned for later: sign-in, cloud backup, family profiles, widgets, watch apps and health integrations.',
   },
   notifications: {
     status: {
