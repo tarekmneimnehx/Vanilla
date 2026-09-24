@@ -8,6 +8,13 @@ export const en = {
     tagline: 'A calm place for what you take and drink.',
     medicalDisclaimer: 'Rituvaya does not give medical advice. Check with your doctor or pharmacist before starting, stopping or changing any medication or supplement.',
   },
+  watch: {
+    title: 'Today',
+    openPhone: 'Open Rituvaya on your iPhone to update this list',
+    empty: 'Nothing scheduled today',
+    allDone: 'All done for today',
+    progress: '{done} of {total}',
+  },
   common: {
     next: 'Next',
     back: 'Back',

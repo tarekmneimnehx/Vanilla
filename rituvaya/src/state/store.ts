@@ -41,6 +41,7 @@ import { ACTION_LOG_WATER, ACTION_SKIP, ACTION_SNOOZE, ACTION_TAKEN, ACTION_TONI
 import { reconcileNotifications } from '@/notifications/reconcile';
 import { loadDemoData } from '@/storage/demoData';
 import type { Repository, ScheduledNotificationRecord } from '@/storage/repository';
+import type { WatchAction } from '@/watch/actions';
 
 export interface StoreSnapshot extends DataState {
   ready: boolean;
@@ -74,6 +75,7 @@ export class AppStore {
   private reconcileRunning = false;
   private reconcileQueued = false;
   private handledResponses = new Set<string>();
+  private handledWatchActions = new Set<string>();
   private settingsQueue: Promise<unknown> = Promise.resolve();
   readonly clock: () => number;
 
@@ -507,6 +509,44 @@ export class AppStore {
         return { route: '/hydration', toast: null };
       default:
         return { route: `/due?keys=${encodeURIComponent(keys.join(','))}`, toast: null };
+    }
+  }
+
+  /**
+   * An action from the watch — a tap in its list or a notification button pressed
+   * on the wrist. Deduplicated by id because the watch sends each tap twice (see
+   * WatchAction), and recording is idempotent per occurrence besides. Taken and
+   * skipped keep the time of the tap, which can be well before the phone hears
+   * about it if the watch was out of range; it is clamped to now so a watch clock
+   * running ahead can't log the future. Returns how many doses changed.
+   */
+  async applyWatchAction(input: WatchAction): Promise<number> {
+    if (this.handledWatchActions.has(input.id)) return 0;
+    this.handledWatchActions.add(input.id);
+    const views = this.viewsForKeys(input.keys).filter((v) => !v.isFinal);
+    if (views.length === 0) return 0;
+    const now = this.clock();
+    switch (input.action) {
+      case 'taken':
+      case 'skip': {
+        const action: FinalAction = input.action === 'taken' ? 'taken' : 'skipped';
+        const itemsById = new Map(this.snapshot.items.map((i) => [i.id, i]));
+        let changed = 0;
+        for (const view of views) {
+          const item = itemsById.get(view.occurrence.itemId);
+          if (!item) continue;
+          const result = await recordAction(this.repo, { occurrence: view.occurrence, item, action, at: Math.min(input.at, now), source: 'watch' }, now, this.snapshot.tz);
+          if (result.created) changed += 1;
+        }
+        await this.changed();
+        return changed;
+      }
+      case 'snooze':
+        for (const view of views) await this.snooze(view.occurrence.key);
+        return views.length;
+      case 'tonight':
+        for (const view of views) await this.remindTonight(view.occurrence.key);
+        return views.length;
     }
   }
 

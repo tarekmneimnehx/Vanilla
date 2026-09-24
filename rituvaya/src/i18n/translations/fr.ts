@@ -6,6 +6,13 @@ export const fr: Translation = {
     tagline: 'Un espace calme pour ce que vous prenez et buvez.',
     medicalDisclaimer: 'Rituvaya ne donne pas de conseil médical. Demandez l’avis de votre médecin ou de votre pharmacien avant de commencer, d’arrêter ou de modifier un médicament ou un complément.',
   },
+  watch: {
+    title: 'Aujourd’hui',
+    openPhone: 'Ouvrez Rituvaya sur votre iPhone pour mettre à jour cette liste',
+    empty: 'Rien de prévu aujourd’hui',
+    allDone: 'Tout est fait pour aujourd’hui',
+    progress: '{done} sur {total}',
+  },
   common: {
     next: 'Suivant',
     back: 'Retour',

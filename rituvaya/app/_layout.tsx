@@ -17,6 +17,7 @@ import { createRepository } from '@/storage';
 import { ThemeProvider, useTheme } from '@/ui/ThemeProvider';
 import { ToastProvider } from '@/ui/components/Toast';
 import { NotificationBridge } from '@/features/NotificationBridge';
+import { WatchBridge } from '@/features/WatchBridge';
 import { applyLayoutDirection } from '@/ui/rtl';
 import type { Language } from '@/domain/types';
 
@@ -137,6 +138,7 @@ function Shell() {
     <ToastProvider bottomOffset={0}>
       <StatusBar style={theme.isDark ? 'light' : 'dark'} />
       <NotificationBridge />
+      <WatchBridge />
       <Stack
         screenOptions={{
           headerShown: false,

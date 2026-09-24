@@ -6,6 +6,13 @@ export const de: Translation = {
     tagline: 'Ein ruhiger Ort für das, was du einnimmst und trinkst.',
     medicalDisclaimer: 'Rituvaya gibt keinen medizinischen Rat. Sprich mit deiner Ärztin, deinem Arzt oder deiner Apotheke, bevor du ein Medikament oder Nahrungsergänzungsmittel beginnst, absetzt oder änderst.',
   },
+  watch: {
+    title: 'Heute',
+    openPhone: 'Öffne Rituvaya auf deinem iPhone, um diese Liste zu aktualisieren',
+    empty: 'Heute nichts geplant',
+    allDone: 'Für heute alles erledigt',
+    progress: '{done} von {total}',
+  },
   common: {
     next: 'Weiter',
     back: 'Zurück',

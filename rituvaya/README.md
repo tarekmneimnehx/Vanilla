@@ -92,6 +92,31 @@ Upload the `dist/` folder to any static host (Netlify drop, Vercel, GitHub Pages
   ```
 - On Android 13+ the app asks for `POST_NOTIFICATIONS`; on Android 12+ exact alarm times may need the "Alarms & reminders" permission, which the notification status screen explains.
 
+## Apple Watch
+
+A companion watch app (SwiftUI, in `targets/watch/`) that lists the day's doses with name, size and time, and ticks a dose off with one tap. Reminder buttons pressed on the wrist (Taken, Skip, Snooze, Remind tonight) go through the same path. The phone stays the source of truth — the watch holds no records of its own.
+
+**How it stays in step**
+
+- The phone sends today **and the next two days** (`src/watch/payload.ts`) as WatchConnectivity application context whenever they change (`src/features/WatchBridge.tsx`). The phone app only runs while it's open, so the extra days keep the watch correct on a morning the phone app hasn't been opened yet. The watch picks the day matching its own clock and moves doses from upcoming to due by itself between syncs.
+- A tick shows on the watch immediately and is kept across relaunches. It is sent twice — an immediate message when the phone is reachable, and a queued transfer that survives the phone being away — and `AppStore.applyWatchAction` counts the pair once by id. Recording is idempotent per dose anyway, so a dose ticked on both the phone and the watch is logged once.
+- The log keeps the time of the tap on the watch, not when the phone heard about it, and is marked with source `watch`.
+- Every word the watch shows is sent by the phone in the user's language, including notification button titles and right-to-left layout for Arabic. The only exception is the "open the app on your iPhone" line before the very first sync.
+
+**Running it**
+
+1. `ios.appleTeamId` must be set in `app.json` so the watch target can be signed. With a free Apple ID, find your team ID in an existing build before regenerating: `grep -m1 DEVELOPMENT_TEAM ios/Rituvaya.xcodeproj/project.pbxproj`. It is the 10-character value; add it as `"appleTeamId": "XXXXXXXXXX"` under `ios`.
+2. `npx expo prebuild --platform ios --clean` — adds the `RituvayaWatch` target.
+3. **Simulator:** open `ios/Rituvaya.xcworkspace`, run the `Rituvaya` scheme on an iPhone simulator that has a paired watch (Xcode creates these pairs; see Window › Devices and Simulators), then choose the `RituvayaWatch` scheme and run it on the paired watch simulator.
+4. **Real watch:** the watch needs Developer Mode on (Settings › Privacy & Security on the watch) and must be paired with the phone. Installing the phone app from Xcode installs the watch app with it; if it doesn't appear, open the Watch app on the iPhone › Available Apps › Install.
+
+**Limits, stated plainly**
+
+- A tick reaches the phone at once while the phone app is open or suspended in the background. If the phone app was closed, the tick is recorded — with its original time — the next time the app is opened, and until then the phone's own repeat reminders for that dose can still fire.
+- The list is as fresh as the last time the phone app ran, up to two days ahead.
+- Undo happens on the phone; a ticked dose can't be un-ticked on the watch.
+- The watch payload shape lives in two places: `src/watch/payload.ts` and `targets/watch/Models.swift`. Change them together; the `v` field lets an older watch ignore a newer shape.
+
 ## Signing and identifiers
 
 - Bundle identifier / package: `com.rituvaya.app` (change in `app.json` before store submission — it can never change once the app is published).
@@ -100,6 +125,7 @@ Upload the `dist/` folder to any static host (Netlify drop, Vercel, GitHub Pages
 - **Medical disclaimer.** App Store guideline 1.4.1 asks health apps to remind people to check with a doctor. `app.medicalDisclaimer` is shown on the onboarding step where the first item is added and in Settings › About. Keep it in both places.
 - The app uses local notifications only, so `plugins/withLocalOnlyNotifications.js` strips the `aps-environment` entitlement that `expo-notifications` adds by default. Without this, a free Apple ID cannot sign a build: personal teams do not support the Push Notifications capability. Remove the plugin if remote push is ever added.
 - **UIScene life cycle.** iOS 26 and later assert at launch (`EXC_BREAKPOINT` in `UIApplicationEvaluateRuntimeIssueForNoSceneLifecycleAdoption`) unless the app adopts it, killing the app before any JavaScript runs. Expo SDK 57 ships `ExpoAppSceneDelegate` for this but its template does not wire it, so two pieces here do: `ios.infoPlist.UIApplicationSceneManifest` in `app.json` names the delegate, and `plugins/withSceneLifecycle.js` patches the generated `AppDelegate.swift` to declare `ExpoReactNativeFactoryProvider` conformance and stop creating the window (the scene delegate owns it). Both are needed — the manifest alone makes the scene delegate `fatalError` on connect. Drop them if a later Expo template adopts scenes itself; the plugin throws rather than silently no-op when the template changes.
+- **Watch app.** `@bacons/apple-targets` builds the `RituvayaWatch` target (`com.rituvaya.app.watchkitapp`, watchOS 10+) from `targets/watch/`. It hardcodes the watch version as 1.0, and App Store Connect requires a watch app's version to match its iPhone app, so `plugins/withWatchVersion.js` copies `version` and `ios.buildNumber` onto the watch target. The watch icon and accent colour are generated into `targets/watch/Assets.xcassets` on prebuild (gitignored).
 - Icons, splash, notification icon and the two `.wav` sounds are generated from `scripts/generate-icons.js` and `scripts/generate-sounds.js` and committed under `assets/`.
 - No secrets, API keys or services are required.
 
@@ -126,8 +152,12 @@ Project layout is described in [`docs/PLAN.md`](docs/PLAN.md). In short: `app/` 
 | Type safety | `tsc --noEmit` with typed routes | clean |
 | Rendered screens (onboarding end to end, Today, logging + undo, routine, item detail, schedule editor, history calendar/week, hydration, settings, dark theme, Arabic RTL, German long labels) | Expo web + headless Chromium at 390×844, console checked | 0 console errors; screenshots in `docs/screenshots` |
 | Persistence across relaunch | Web preview reload after onboarding (browser storage); SQLite path exercised only through code review | see limitations |
+| Watch sync, phone side (payload shape and wording, no nulls for WatchConnectivity, applying ticks with the tap time, dedupe of the message and its queued copy, clock-skew clamp, skip and snooze, malformed messages dropped, no crash without the native module) | Jest against a real store over the in-memory repository | pass |
+| Watch app, native side | Swift syntax parsed with tree-sitter; generated Xcode project inspected after prebuild (target, bundle id, watchOS 10, companion link, version 1.0.0, embed phase, files compiled, autolinking) | **not compiled** — see below |
 
-Not verified here, because this environment has no iOS/Android simulators or devices: notification delivery and action buttons on a real device, the native time pickers, haptics, Dynamic Type at the largest sizes, SQLite on device. The first thing to do on the phone is Settings › Notification status › "Send a test reminder".
+Totals: 16 Jest suites, 125 tests.
+
+Not verified here, because this environment has no iOS/Android simulators or devices: notification delivery and action buttons on a real device, the native time pickers, haptics, Dynamic Type at the largest sizes, SQLite on device. The first thing to do on the phone is Settings › Notification status › "Send a test reminder". **The watch app has never been compiled** — there is no Xcode here — so expect its first build to surface errors a type checker would have caught.
 
 ## Known limitations
 
@@ -144,7 +174,7 @@ Not verified here, because this environment has no iOS/Android simulators or dev
 1. Apple and Google sign-in, using the existing UUID record identities.
 2. Cloud backup and cross-device sync over the repository boundary (`src/storage/repository.ts`), with the JSON export format as the wire format starting point.
 3. Family profiles and sharing (per-profile items and records).
-4. Home-screen widgets (next dose, water), Apple Watch and Wear OS companions.
+4. Home-screen widgets (next dose, water), a watch-face complication, and a Wear OS companion. (The Apple Watch app itself is built; see above.)
 5. Apple Health and Health Connect for supported types (water intake; medication types where the OS exposes them).
 6. Import of the JSON export, background notification actions, richer catalog.
 7. Monetization once decided; no paywall or ads exist in this build.

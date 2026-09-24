@@ -71,6 +71,8 @@
     "plugins": [
       "./plugins/withLocalOnlyNotifications",
       "./plugins/withSceneLifecycle",
+      "./plugins/withWatchVersion",
+      "@bacons/apple-targets",
       "expo-router",
       [
         "expo-notifications",

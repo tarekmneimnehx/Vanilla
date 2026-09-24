@@ -118,7 +118,7 @@ export interface Occurrence {
 }
 
 export type FinalAction = 'taken' | 'skipped' | 'missed';
-export type LogSource = 'app' | 'notification' | 'group' | 'history';
+export type LogSource = 'app' | 'notification' | 'group' | 'history' | 'watch';
 
 export interface DoseLog {
   id: string;

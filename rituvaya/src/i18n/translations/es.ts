@@ -6,6 +6,13 @@ export const es: Translation = {
     tagline: 'Un lugar tranquilo para lo que tomas y bebes.',
     medicalDisclaimer: 'Rituvaya no ofrece consejo médico. Consulta a tu médico o farmacéutico antes de empezar, dejar o cambiar cualquier medicamento o suplemento.',
   },
+  watch: {
+    title: 'Hoy',
+    openPhone: 'Abre Rituvaya en tu iPhone para actualizar esta lista',
+    empty: 'Nada programado para hoy',
+    allDone: 'Todo listo por hoy',
+    progress: '{done} de {total}',
+  },
   common: {
     next: 'Siguiente',
     back: 'Atrás',

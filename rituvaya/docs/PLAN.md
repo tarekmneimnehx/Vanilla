@@ -42,6 +42,9 @@ rituvaya/
   src/state/           app store (useSyncExternalStore) + hooks that compose domain + storage
   src/i18n/            translation files (en, ar, fr, es, de), plural rules, formatting
   src/ui/              theme tokens, typography, components, artwork
+  src/watch/           Apple Watch sync: payload builder, action parsing, WatchConnectivity bridge
+  targets/watch/       the SwiftUI watch app (built into Xcode by @bacons/apple-targets)
+  plugins/             config plugins: push entitlement, scene life cycle, watch version
   docs/                this plan, notifications behaviour, handoff
 ```
 
