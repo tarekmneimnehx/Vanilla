@@ -6,7 +6,7 @@ import type { OccurrenceView } from '@/domain/logging/status';
 import { nextDose, overdueViews } from '@/domain/services/queries';
 import { goalOn, totalFor } from '@/domain/services/hydrationService';
 import { wallClock } from '@/domain/time/clock';
-import { useI18n } from '@/i18n';
+import { isolateFor, useI18n } from '@/i18n';
 import { formatItemDose } from '@/i18n/dose';
 import { formatLocalDate, formatMinutes, formatTime } from '@/i18n/format';
 import { useDay, useFormatContext, useIndexes, useNow, useSnapshot, useStore, useToday } from '@/state/context';
@@ -44,7 +44,8 @@ export default function TodayScreen() {
   const hour = wallClock(now, snapshot.tz).hour;
   const greetingKey = hour < 12 ? 'greeting.morning' : hour < 17 ? 'greeting.afternoon' : hour < 22 ? 'greeting.evening' : 'greeting.night';
   const name = snapshot.settings.preferredName.trim();
-  const greeting = t(greetingKey, { name: name ? `${t('greeting.nameSeparator')}${name}` : '' });
+  // Only the name is isolated: the separator belongs to the sentence, or Arabic puts the comma on the far side of the name.
+  const greeting = t(greetingKey, { name: name ? `${t('greeting.nameSeparator')}${isolateFor(name, language)}` : '' });
 
   const totalMl = totalFor(snapshot.hydration, today);
   const goalMl = goalOn(snapshot.settings, today);

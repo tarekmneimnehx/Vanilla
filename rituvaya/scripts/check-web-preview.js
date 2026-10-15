@@ -31,7 +31,7 @@ const server = http.createServer((req, res) => {
 async function main() {
   await new Promise((resolve) => server.listen(PORT, resolve));
   const { chromium } = require('playwright');
-  const browser = await chromium.launch();
+  const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH, args: ['--no-sandbox'] } : {});
   for (const variant of [`${PREFIX}`, `${PREFIX}/`, `${PREFIX}/index.html`]) {
     const page = await browser.newPage({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
     const errors = [];

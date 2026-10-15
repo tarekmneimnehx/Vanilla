@@ -121,17 +121,19 @@ export const radius = {
   pill: 999,
 } as const;
 
+// On the web, useFonts registers each face under its key (Fraunces_500Medium, ...),
+// so the web names must match those keys; the rest of each stack is the fallback.
 export const fonts = {
-  display: Platform.select({ web: 'Fraunces, Georgia, serif', default: 'Fraunces_500Medium' }) as string,
-  displayRegular: Platform.select({ web: 'Fraunces, Georgia, serif', default: 'Fraunces_400Regular' }) as string,
-  displaySemibold: Platform.select({ web: 'Fraunces, Georgia, serif', default: 'Fraunces_600SemiBold' }) as string,
-  body: Platform.select({ web: 'Manrope, system-ui, sans-serif', default: 'Manrope_400Regular' }) as string,
-  bodyMedium: Platform.select({ web: 'Manrope, system-ui, sans-serif', default: 'Manrope_500Medium' }) as string,
-  bodySemibold: Platform.select({ web: 'Manrope, system-ui, sans-serif', default: 'Manrope_600SemiBold' }) as string,
-  bodyBold: Platform.select({ web: 'Manrope, system-ui, sans-serif', default: 'Manrope_700Bold' }) as string,
-  arabic: Platform.select({ web: '"IBM Plex Sans Arabic", system-ui, sans-serif', default: 'IBMPlexSansArabic_400Regular' }) as string,
-  arabicMedium: Platform.select({ web: '"IBM Plex Sans Arabic", system-ui, sans-serif', default: 'IBMPlexSansArabic_500Medium' }) as string,
-  arabicSemibold: Platform.select({ web: '"IBM Plex Sans Arabic", system-ui, sans-serif', default: 'IBMPlexSansArabic_600SemiBold' }) as string,
+  display: Platform.select({ web: 'Fraunces_500Medium, Georgia, serif', default: 'Fraunces_500Medium' }) as string,
+  displayRegular: Platform.select({ web: 'Fraunces_400Regular, Georgia, serif', default: 'Fraunces_400Regular' }) as string,
+  displaySemibold: Platform.select({ web: 'Fraunces_600SemiBold, Georgia, serif', default: 'Fraunces_600SemiBold' }) as string,
+  body: Platform.select({ web: 'Manrope_400Regular, system-ui, sans-serif', default: 'Manrope_400Regular' }) as string,
+  bodyMedium: Platform.select({ web: 'Manrope_500Medium, system-ui, sans-serif', default: 'Manrope_500Medium' }) as string,
+  bodySemibold: Platform.select({ web: 'Manrope_600SemiBold, system-ui, sans-serif', default: 'Manrope_600SemiBold' }) as string,
+  bodyBold: Platform.select({ web: 'Manrope_700Bold, system-ui, sans-serif', default: 'Manrope_700Bold' }) as string,
+  arabic: Platform.select({ web: 'IBMPlexSansArabic_400Regular, system-ui, sans-serif', default: 'IBMPlexSansArabic_400Regular' }) as string,
+  arabicMedium: Platform.select({ web: 'IBMPlexSansArabic_500Medium, system-ui, sans-serif', default: 'IBMPlexSansArabic_500Medium' }) as string,
+  arabicSemibold: Platform.select({ web: 'IBMPlexSansArabic_600SemiBold, system-ui, sans-serif', default: 'IBMPlexSansArabic_600SemiBold' }) as string,
 } as const;
 
 export type TypeVariant = 'display' | 'title' | 'heading' | 'subheading' | 'body' | 'bodyStrong' | 'small' | 'smallStrong' | 'caption' | 'label' | 'numeral';

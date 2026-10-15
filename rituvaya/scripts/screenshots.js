@@ -12,6 +12,9 @@ async function main() {
   // CHROMIUM_PATH lets a sandbox with a pre-installed browser skip the download.
   const browser = await chromium.launch(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH, args: ['--no-sandbox'] } : {});
   const context = await browser.newContext({ viewport: VIEWPORT, deviceScaleFactor: 2, isMobile: true, hasTouch: true, locale: 'en-GB', timezoneId: 'Asia/Dubai' });
+  // Start every run on the same Wednesday morning so screenshots don't depend on when they were taken.
+  // The clock keeps ticking from there. SHOT_TIME overrides it (any Date string).
+  await context.clock.install({ time: new Date(process.env.SHOT_TIME || '2026-10-14T07:10:00+04:00') });
   const page = await context.newPage();
   const errors = [];
   page.on('console', (msg) => {
@@ -23,6 +26,11 @@ async function main() {
     await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(OUT, `${name}.png`), fullPage: false });
     console.log('shot', name);
+  };
+  // Tabs keep their scroll position; start theme and language comparisons from the top of the screen.
+  const scrollToTop = async () => {
+    await page.evaluate(() => document.querySelectorAll('*').forEach((el) => { if (el.scrollTop > 0) el.scrollTop = 0; }));
+    await page.waitForTimeout(300);
   };
   const dismissDevToast = async () => {
     // Expo's dev overlay can cover the tab bar; record it and close it so the walkthrough continues.
@@ -219,10 +227,17 @@ async function main() {
   await shot('22-settings-dark');
   await click('Today');
   await page.waitForTimeout(600);
+  await scrollToTop();
   await shot('23-today-dark');
   await click('Settings');
   await click('Appearance');
   await click('Light');
+  // The same moment in the light theme, so the theme and language shots compare like for like.
+  await click('Today');
+  await page.waitForTimeout(600);
+  await scrollToTop();
+  await shot('23b-today-light');
+  await click('Settings');
 
   // Arabic RTL.
   await click('Language');
@@ -231,6 +246,7 @@ async function main() {
   await shot('24-settings-arabic');
   await click('اليوم');
   await page.waitForTimeout(800);
+  await scrollToTop();
   await shot('25-today-arabic');
   await click('روتيني');
   await page.waitForTimeout(600);
@@ -241,6 +257,7 @@ async function main() {
   await page.waitForTimeout(600);
   await click('Heute');
   await page.waitForTimeout(600);
+  await scrollToTop();
   await shot('27-today-german');
   await click('Routine');
   await shot('28-routine-german');

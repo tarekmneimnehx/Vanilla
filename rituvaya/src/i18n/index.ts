@@ -71,14 +71,21 @@ function lookup(table: Translation, key: string): Leaf | undefined {
 const FSI = '⁨';
 const PDI = '⁩';
 
+/**
+ * Isolates user-provided text inside Arabic sentences so mixed-direction names and numbers
+ * keep their order. Text that already holds an isolate is left alone, so a caller can isolate
+ * just the name and keep punctuation next to it in the sentence's own direction.
+ */
+export function isolateFor(text: string, language: Language): string {
+  return language === 'ar' && /[A-Za-z0-9]/.test(text) && !text.includes(FSI) ? `${FSI}${text}${PDI}` : text;
+}
+
 function interpolate(template: string, params: Params | undefined, language: Language): string {
   if (!params) return template;
   return template.replace(/\{(\w+)\}/g, (match, name: string) => {
     const value = params[name];
     if (value === undefined) return match;
-    const text = typeof value === 'number' ? formatNumberFor(value, language) : value;
-    // Isolate user-provided text inside Arabic sentences so mixed-direction names and numbers keep their order.
-    return language === 'ar' && typeof value === 'string' && /[A-Za-z0-9]/.test(text) ? `${FSI}${text}${PDI}` : text;
+    return typeof value === 'number' ? formatNumberFor(value, language) : isolateFor(value, language);
   });
 }
 

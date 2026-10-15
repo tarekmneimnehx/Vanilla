@@ -1,4 +1,4 @@
-import { LANGUAGES, TRANSLATIONS, translate } from '../index';
+import { LANGUAGES, TRANSLATIONS, isolateFor, translate } from '../index';
 import { en } from '../translations/en';
 import { pluralCategory } from '../plural';
 import { formatDuration, formatMinutes, formatLocalDate, formatVolume } from '../format';
@@ -51,6 +51,12 @@ describe('translations', () => {
   it('isolates Latin names inside Arabic sentences', () => {
     const text = translate('ar', 'notifications.dose.titleOne', { name: 'Vitamin D3' });
     expect(text).toContain('⁨Vitamin D3⁩');
+  });
+
+  it('keeps the greeting comma on the sentence side of an isolated name', () => {
+    const name = `${translate('ar', 'greeting.nameSeparator')}${isolateFor('Tarek', 'ar')}`;
+    expect(translate('ar', 'greeting.morning', { name })).toBe('صباح الخير، ⁨Tarek⁩');
+    expect(translate('en', 'greeting.morning', { name: `${translate('en', 'greeting.nameSeparator')}${isolateFor('Tarek', 'en')}` })).toBe('Good morning, Tarek');
   });
 
   it('formats times, dates, volumes and durations per locale', () => {

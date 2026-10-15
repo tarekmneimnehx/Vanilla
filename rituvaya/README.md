@@ -136,7 +136,7 @@ npm install
 npm run typecheck   # tsc --noEmit
 npm test            # jest (domain, i18n, notifications)
 npm run web         # web preview at http://localhost:8081 (browser storage instead of SQLite)
-node scripts/screenshots.js http://localhost:8081 docs/screenshots   # Playwright walkthrough + screenshots
+node scripts/screenshots.js http://localhost:8081 docs/screenshots   # Playwright walkthrough + screenshots (clock starts Wed 14 Oct 2026, 07:10 Dubai; SHOT_TIME overrides)
 ```
 
 Project layout is described in [`docs/PLAN.md`](docs/PLAN.md). In short: `app/` holds routes, `src/domain` the pure logic, `src/storage` persistence, `src/notifications` the expo-notifications adapter, `src/i18n` translations, `src/ui` the design system, `src/features` screen-level components.
@@ -155,7 +155,7 @@ Project layout is described in [`docs/PLAN.md`](docs/PLAN.md). In short: `app/` 
 | Watch sync, phone side (payload shape and wording, no nulls for WatchConnectivity, applying ticks with the tap time, dedupe of the message and its queued copy, clock-skew clamp, skip and snooze, malformed messages dropped, no crash without the native module) | Jest against a real store over the in-memory repository | pass |
 | Watch app, native side | Swift syntax parsed with tree-sitter; generated Xcode project inspected after prebuild (target, bundle id, watchOS 10, companion link, version 1.0.0, embed phase, files compiled, autolinking) | **not compiled** — see below |
 
-Totals: 16 Jest suites, 125 tests.
+Totals: 16 Jest suites, 126 tests.
 
 Not verified here, because this environment has no iOS/Android simulators or devices: notification delivery and action buttons on a real device, the native time pickers, haptics, Dynamic Type at the largest sizes, SQLite on device. The first thing to do on the phone is Settings › Notification status › "Send a test reminder". **The watch app has never been compiled** — there is no Xcode here — so expect its first build to surface errors a type checker would have caught.
 

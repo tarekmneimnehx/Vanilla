@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, Switch, View, type StyleProp, type ViewStyle } from 'react-native';
 import { useI18n } from '@/i18n';
 import { useTheme } from '../ThemeProvider';
 import { IconButton } from './Button';
@@ -74,6 +74,7 @@ export function Stepper({ value, onChange, min = 0, max = 999, step = 1, format,
 
 export function SwitchRow({ label, hint, value, onChange, disabled }: { label: string; hint?: string; value: boolean; onChange: (v: boolean) => void; disabled?: boolean }) {
   const theme = useTheme();
+  const thumb = theme.isDark ? theme.colors.background : '#FFFFFF';
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: theme.spacing.md, minHeight: 56, paddingVertical: 8, opacity: disabled ? 0.5 : 1 }}>
       <View style={{ flex: 1, gap: 2 }}>
@@ -90,8 +91,10 @@ export function SwitchRow({ label, hint, value, onChange, disabled }: { label: s
         disabled={disabled}
         accessibilityLabel={label}
         trackColor={{ true: theme.colors.primary, false: theme.colors.borderStrong }}
-        thumbColor={theme.isDark ? theme.colors.background : '#FFFFFF'}
+        thumbColor={thumb}
         ios_backgroundColor={theme.colors.borderStrong}
+        // react-native-web colours the "on" thumb from its own prop (teal by default), not thumbColor.
+        {...(Platform.OS === 'web' ? ({ activeThumbColor: thumb } as object) : null)}
       />
     </View>
   );
